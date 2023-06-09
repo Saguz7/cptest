@@ -1,0 +1,127 @@
+<div class="container-principal">
+
+  <ng-container *ngIf="loading">
+    <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+  </ng-container>
+  <div class="row card">
+    <div class="row center-align">
+      <div class="row center-align">
+        <div class="col s4 left-align">
+          <p-button (click)="gotomap()" label="Map" icon="pi pi-chevron-left" styleClass="p-button-link"></p-button>
+         </div>
+         <div class="col s4 center-align">
+                 <h6>Chassis Details</h6>
+         </div>
+        <div class="col s4 right-align">
+                 <p-button  (click)="gotoroutemap()" label="Chassis History" styleClass="p-button-link"></p-button>
+        </div>
+      </div>
+      <div class="col s12">
+<br>
+      {{chasis}} <!-- <label> Load # 5600670637</label> -->
+    <hr>
+  </div>
+    </div>
+    <div class="col s12 card-general">
+      <div class="col s6">
+        <div class="col s12 card-content">
+          <div class="col s12">
+            <div class="col s12">
+
+            Last Reported Location
+            </div>
+           </div>
+           <div class="col s12">
+             <hr>
+
+            </div>
+        <div class="col s4">
+
+          <div class="col s12">
+
+            <label class="title">Lat:</label> {{lon}}   <br>
+            <label class="title">Lon:</label> {{lat}} <br>
+          </div>
+
+        </div>
+        <div class="col s8">
+          <div class="row">
+            <div id="map-view" class="container-map" #mapViewNode></div>
+          </div>
+
+        </div>
+        </div>
+      </div>
+      <div class="col s6">
+
+        <div class="col s12 card-content">
+          <div class="col s12">
+            <div class="col s12">
+
+            Details
+            </div>
+           </div>
+           <div class="col s12">
+             <hr>
+
+            </div>
+        <div class="col s12">
+
+          <div class="col s6"  *ngIf="date && event">
+
+            <label class="title"> Date:</label>  {{date}} <br>
+            <label class="title"> Last Event:</label>   {{formatstring(event)}} <br>
+            <ng-container *ngIf="properties!=undefined">
+              <label class="title">Asset Class:</label>  {{formatstring(properties.asset_class)  }} <br>
+              <ng-container *ngIf="properties.chassis_type!=undefined">
+                <label class="title">Chassis Type:</label>  {{properties.chassis_type}} <br>
+              </ng-container>
+
+              <label class="title">Door Type:</label>  {{properties.door_type}} <br>
+              <label class="title">Height:</label>  {{properties.height}} <br>
+              <label class="title">Width:</label>  {{properties.width}} <br>
+              <label class="title">Initial Distance:</label>  {{properties.initial_distance}} <br>
+              <label class="title">Mounting Location:</label>  {{formatstring(properties.mounting_location)}} <br>
+              <ng-container *ngIf="properties.sensors!=undefined">
+              <label class="title">Sensors:</label>    <br>
+
+                <ng-container *ngIf="properties.sensors.length>0">
+                  <ng-container *ngFor="let sensor of properties.sensors; let i = index">
+                    -   {{ formatstring(sensor) }} <br>
+                  </ng-container>
+
+                </ng-container>
+              </ng-container>
+
+            </ng-container>
+          </div>
+
+          <div class="col s6" >
+            <label class="title">Geofences:</label>    <br>
+            <ng-container *ngFor="let geofence of geofences_array; let i = index">
+               {{ geofence.name }} <br>
+            </ng-container>
+          </div>
+
+        </div>
+        <div class="col s8">
+          <div class="row">
+            <div class="container-map" #mapViewNode></div>
+          </div>
+
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="col s12"><br><br>
+      <div class="col s12 center-align">
+        <button pButton pRipple type="button" label="PDF" class="p-button-success" (click)=downloadFile()></button>
+      </div>
+    </div>
+    <div class="col s12"><br><br>
+    </div>
+
+
+
+  </div>
+</div>

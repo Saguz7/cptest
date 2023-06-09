@@ -1,0 +1,31 @@
+.position-icon{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.position-icontext{
+    position: absolute;
+    bottom: 0;
+    font-size:18px
+}
+
+.format-cards{
+    background-color: rgb(192, 13, 13);
+    height: 250px;
+}
+
+.position-close{
+    background: grey;
+    background-color: grey;
+    color: black;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.ui-button.black-button {
+    background-color: black;
+ }
+  
+

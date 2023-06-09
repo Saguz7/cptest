@@ -1,0 +1,86 @@
+<div class="container-principal">
+  <p-toast></p-toast>
+
+  <div class="row card">
+    <div class="col s12 center-align">
+            <h6>Current Chassis Location</h6>
+    </div>
+    <!--
+    <div class="p-col-10 p-offset-1"><br><br>
+    </div><br><br>
+    -->
+    <div *ngIf="!ocultarFiltro">
+    <app-filter-map [Events]="events" [Georeferences]="georeferences" (SendFilters)="getFilters($event)" (Sendchecked)="getChecked($event)" [Time]="timestring"></app-filter-map>
+    </div>
+    <ng-container *ngIf="loading">
+      <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+    </ng-container>
+
+     <p-divider align="center" type="dashed">
+
+        <button *ngIf="ocultarFiltro" (click)="mostrar()" ><span class="material-icons">
+          expand_more
+          </span></button>
+        <button *ngIf="!ocultarFiltro" (click)="ocultar()"><span class="material-icons">
+          expand_less
+          </span></button>
+    </p-divider>
+    <div class="p-col-12">
+      <div id="esri-view" #mapViewNode></div>
+          <div id="viewDiv"></div>
+      <div id="select-by-rectangle" class="esri-widget esri-widget--button esri-widget esri-interactive"
+          title="Select features by rectangle">
+        <span class="esri-icon-checkbox-unchecked"></span>
+      </div>
+      <div id="select-by-circle" class="esri-widget esri-widget--button esri-widget esri-interactive"
+          title="Select features by circle">
+        <span class="esri-icon-radio-unchecked"></span>
+      </div>
+      <div id="clear-selection" class="esri-widget esri-widget--button esri-widget esri-interactive"
+          title="Clear selection">
+        <span class="esri-icon-erase"></span>
+      </div>
+      <div id="infoDiv" class="esri-widget">
+       <button id="cluster" class="esri-button">Disable Clustering</button>
+      </div>
+
+      <div class="container">
+        <div id="tableDiv"></div>
+      </div>
+    </div>
+    <div class="p-col-12">
+
+    <p-divider align="center" type="dashed">
+
+      <button *ngIf="ocultarTabla" (click)="mostrarTabla()" ><span class="material-icons">
+        expand_less
+        </span></button>
+      <button *ngIf="!ocultarTabla" (click)="ocultarTab()"><span class="material-icons">
+        expand_more
+        </span></button>
+  </p-divider>
+
+  <div class="row">
+    <div *ngIf="!ocultarTabla">
+    <app-table-map [Data]='data' (SendCenter)="getCenter($event)"></app-table-map>
+    <ng-container *ngIf="loading">
+      <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+    </ng-container>
+    </div>
+  <div class="col s12">
+    <button pButton pRipple type="button" label="CSV" class="p-button-success" (click)=downloadFile()></button>
+  </div>
+</div>
+</div>
+
+    </div>
+
+
+
+
+
+
+</div>
+  <!--
+  <app-chasis [Train]="train"></app-chasis>
+  -->

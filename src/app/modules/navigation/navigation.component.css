@@ -1,0 +1,37 @@
+nav{
+  background-color: white;
+  color: black;
+  font-size: 25px;
+}
+
+.text-nav{
+  color: black;
+  font-size: 20px;
+}
+
+.icon-user{
+  color: black;
+  font-size: 3rem;
+  position: relative;
+  top: 10px;
+}
+
+.cp-style{
+  position: relative;
+  width: 8%; 
+  top: 4px;
+}
+
+.icons-right{
+  color: black;
+  font-size: 2rem;
+  position: relative;
+  top: 10px;
+  right: 10px;
+}
+.linea {
+  border-top: 7px solid rgb(194, 22, 22);
+  height: 10px;
+  right: 0;
+  padding: 0,0,0,0;
+}

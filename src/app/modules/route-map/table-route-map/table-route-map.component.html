@@ -1,0 +1,88 @@
+   <div class="row">
+
+
+    <div class="p-col-12" *ngIf="Data!=undefined"><br><br>
+      <ng-container *ngIf="Data.length>0">
+        <div class="col s12">
+          <div class="col s2">
+            Historical Points ({{Data.length}})
+          </div>
+          <div class="col s8">
+          </div>
+          <div class="col s2 right-align">
+          </div>
+        </div>
+        <div class="col s12">
+          <p-table #dt1 [value]="Data" [columns]="cols" [reorderableColumns]="true" [scrollable]="true" scrollHeight="400px" [resizableColumns]="true" styleClass="p-datatable-striped p-datatable-gridlines" [tableStyle]="{'min-width': '50rem'}" >
+        <ng-template pTemplate="header" let-columns>
+       <tr>
+         <ng-container *ngFor="let col of columns">
+           <th  style="width:{{col.width}}%" pReorderableColumn>
+               {{col.header}}
+           </th>
+         </ng-container>
+
+       </tr>
+   </ng-template>
+
+        <ng-template pTemplate="body" let-object>
+            <tr>
+              <ng-container *ngFor="let col of cols">
+
+              <td  style="width:{{col.width}}%">
+                  <div class="tdbreak">
+
+                    <ng-container *ngIf="col.field=='num'">
+                      <div class="center-align">
+
+                      <a href="javascript:void(0);" (click)="gotomapcenter(object)" > {{object[col.field]}}</a>
+                    </div>
+
+                    </ng-container>
+                    <ng-container *ngIf="col.field=='total_distance'">
+                      <ng-container *ngIf="object[col.field]!='undefined'">
+                           {{ object[col.field]}} mi
+
+
+                      </ng-container>
+
+
+                    </ng-container>
+
+                    <ng-container *ngIf="col.field=='traveled_distance'">
+                      <ng-container *ngIf="!isEmpty(object[col.field])">
+                           {{ object[col.field]}} mi
+
+
+                      </ng-container>
+
+
+                    </ng-container>
+                    <ng-container *ngIf="col.field!='num' && col.field!='total_distance' && col.field!='traveled_distance'">
+
+                      {{ object[col.field]}}
+
+                    </ng-container>
+
+                  </div>
+
+              </td>
+            </ng-container>
+
+            </tr>
+        </ng-template>
+    </p-table>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="Data.length==0">
+        <div class="col s12">
+          Historical Points ({{Data.length}})
+        </div>
+      </ng-container>
+
+
+
+    </div><br><br>
+
+
+</div>

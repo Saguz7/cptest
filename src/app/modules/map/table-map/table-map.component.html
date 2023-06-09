@@ -1,0 +1,93 @@
+   <div class="row">
+
+
+    <div class="p-col-12" *ngIf="Data!=undefined">
+      <ng-container *ngIf="Data.length>0">
+        <div class="col s12">
+          <div class="col s2">
+            Equipment ({{Data.length}})
+          </div>
+          <div class="col s8">
+          </div>
+          <div class="col s2 right-align">
+          </div>
+        </div>
+        <div class="col s12">
+          <p-table #dt1 [value]="Data" [columns]="cols" [reorderableColumns]="true" [scrollable]="true" scrollHeight="400px" [resizableColumns]="true" styleClass="p-datatable-striped p-datatable-gridline"  [tableStyle]="{'min-width': '50rem'}" [globalFilterFields]="['reference','date','move_Type_format','georeference','coordinates']">
+            <ng-template pTemplate="caption">
+                        <div class="flex">
+                             <span class="p-input-icon-left ml-auto">
+                                 <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder=" " />
+                            </span>
+                        </div>
+                    </ng-template>
+        <ng-template pTemplate="header" let-columns>
+       <tr>
+           <th *ngFor="let col of columns" pReorderableColumn>
+             <ng-container *ngIf="col.header=='Chassis History'">
+               <div class="center-align">
+                 {{col.header}}
+
+               </div>
+             </ng-container>
+             <ng-container *ngIf="col.header!='Chassis History'">
+               {{col.header}}
+
+             </ng-container>
+            </th>
+       </tr>
+   </ng-template>
+
+        <ng-template pTemplate="body" let-object>
+            <tr>
+              <td *ngFor="let col of cols">
+                <ng-container *ngIf="col.field=='reference'">
+                  <a href="javascript:void(0);" (click)="gotoppsdetails(object[col.field])" > {{object[col.field]}}</a>
+
+                </ng-container>
+                <ng-container *ngIf="col.field=='coordinates'">
+                  <a href="javascript:void(0);" (click)="gotocentermap(object)" > {{object[col.field]}}</a>
+
+                </ng-container>
+                <ng-container *ngIf="col.field=='routemap'">
+                  <div class="center-align">
+                    <button pButton pRipple type="button" icon="pi pi-reply" class="p-button-rounded p-button-outlined"  (click)="gotoroutemap(object['reference'])" >
+
+                    </button>
+                  </div>
+
+
+                </ng-container>
+                <ng-container *ngIf="col.field=='move_type'">
+                  <div class="tdbreak">
+                    {{this.formatstring(object[col.field])}}
+
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="col.field!='reference' && col.field!='coordinates' && col.field!='routemap' && col.field!='move_type'">
+
+                  <div class="tdbreak">
+                    {{this.formatstring(object[col.field])}}
+
+                  </div>
+
+                </ng-container>
+              </td>
+            </tr>
+        </ng-template>
+    </p-table>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="Data.length==0">
+        <div class="col s12">
+          Equipment ({{Data.length}})
+        </div>
+      </ng-container>
+
+
+
+    </div><br><br>
+
+
+</div>
