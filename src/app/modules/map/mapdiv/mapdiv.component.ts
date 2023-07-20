@@ -6,6 +6,7 @@ import { loadModules } from 'esri-loader';
 import * as mapboxgl from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 declare var L: any;
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-mapdiv',
@@ -52,7 +53,9 @@ export class MapDivComponent implements OnInit {
   }
 
   getDatafromGeoJson(){
-    fetch("https://d2gv90pkqj.execute-api.us-west-2.amazonaws.com/dev/get-locations")
+  //  fetch("https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-locations")
+   fetch(environment.API_URL_BASE + "get-locations")
+
     .then(res => res.json())
     .then((out) => {
       if(out.errorMessage==undefined){
@@ -168,7 +171,7 @@ export class MapDivComponent implements OnInit {
           stops: new FeatureSet({
             features: this.mapView.graphics.toArray()
           }),
-          returnDirections: true  
+          returnDirections: true
         });
 
         route.solve(routeUrl, routeParams)

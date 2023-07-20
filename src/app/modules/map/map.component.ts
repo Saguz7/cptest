@@ -10,9 +10,12 @@ import { environment } from '../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2'
 import {MessageService} from 'primeng/api';
-
-
+import { Location } from '@angular/common';
+import { Auth } from 'aws-amplify';
 import { saveAs } from 'file-saver';
+
+
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -29,6 +32,7 @@ export class MapComponent implements OnInit {
   componentsReferences = [];
   events = [];
   georeferences = [];
+  puntosarray = [];
   checked: boolean;
   //  map: Map;
 
@@ -52,6 +56,8 @@ export class MapComponent implements OnInit {
   jsongeneral: any;
   timestring: any;
 
+  layer: any;
+
 
   // this is needed to be able to create the MapView at the DOM element in this component
   @ViewChild('mapViewNode') private mapViewEl: ElementRef;
@@ -60,6 +66,7 @@ export class MapComponent implements OnInit {
     private messageService: MessageService,
     private router : Router,
     private cdRef : ChangeDetectorRef,
+    private location: Location,
     private CFR?: ComponentFactoryResolver,
     private cdref?: ChangeDetectorRef,
     private msService?: MapStateService,
@@ -77,6 +84,44 @@ export class MapComponent implements OnInit {
     ngOnInit() {
 
 
+            return loadModules([
+              "esri/Map",
+              "esri/layers/FeatureLayer",
+              "esri/layers/GeoJSONLayer",
+              "esri/views/MapView",
+              "esri/widgets/Legend",
+              "esri/widgets/Expand",
+              "esri/widgets/Home",
+              "esri/popup/content/CustomContent",
+              "esri/layers/GraphicsLayer",
+              "esri/widgets/Sketch",
+              "esri/widgets/Sketch/SketchViewModel",
+              "esri/geometry/geometryEngineAsync",
+              "esri/geometry/support/webMercatorUtils"
+            ])
+            .then(([Map, FeatureLayer, GeoJSONLayer, MapView, Legend, Expand, Home, CustomContent,GraphicsLayer,Sketch,SketchViewModel,geometryEngineAsync,webMercatorUtils]) => {
+              const map: __esri.Map = new Map({
+                basemap: 'streets'
+              });
+              let that = this;
+
+              this.mapView = new MapView({
+                container: this.mapViewEl.nativeElement,
+                center: [-114.8574, 54.6542],
+                zoom: 4,
+                map: map,
+                constraints: {
+                  minZoom : 3,
+                },
+              });
+            })
+
+
+                      .catch(err => {
+                        console.error(err);
+                      });
+
+
 
 
       this.contador_regresivo();
@@ -90,7 +135,10 @@ export class MapComponent implements OnInit {
       this.filterspoints = [];
       this.href = this.router.url;
       this.currentURL = window.location.href.replace(this.href,'');
+
+
     }
+
 
     contador_regresivo() {
 
@@ -170,6 +218,7 @@ export class MapComponent implements OnInit {
       this.loading = true;
 
       fetch(environment.API_URL_BASE + "get-cpr-geojson")
+    //  fetch("https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-cpr-geojson")
       .then(res => res.json())
       .then((out) => {
         // this.getHistorico(out.features);
@@ -205,6 +254,7 @@ export class MapComponent implements OnInit {
     getDatafromGeoJson(){
 
       fetch(environment.API_URL_BASE + "get-cpr-geojson")
+    //  fetch("https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-cpr-geojson")
       .then(res => res.json())
       .then((out) => {
         // this.getHistorico(out.features);
@@ -244,6 +294,7 @@ export class MapComponent implements OnInit {
         }
 
                      this.http.post<any>(environment.API_URL_BASE + 'chassis-history', {body:{data:obj_send}}).subscribe(data => {
+                    // this.http.post<any>('https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/chassis-history', {body:{data:obj_send}}).subscribe(data => {
                        let results = JSON.parse(data.body);
 
 
@@ -279,6 +330,7 @@ export class MapComponent implements OnInit {
     return from(
       fetch(
         environment.API_URL_BASE + 'get-cpr-geojson', // the url you are trying to access
+      //  'https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-cpr-geojson', // the url you are trying to access
         {
           headers: {
             'Content-Type': 'application/json',
@@ -319,19 +371,16 @@ export class MapComponent implements OnInit {
         let that = this;
 
         let urldirect = window.location.href.replace('/map','')
-        const layer = new GeoJSONLayer({
+        this.layer = new GeoJSONLayer({
           title: "Chassis",
           url: urljson,
           outFields: ["*"],
           popupTemplate: {
-          //  title: 'Chasis <a [routerLink]=["' +environment.url + '"ppsdetails/{id}"] title="{id}">{id}</a>',
             title: 'Chassis  {id} ',
             content: [
 							{
 								type: "custom",
 								creator: (graphic) => {
-									// could also check if button already created
-									// and just reuse it
                   let divcontent = document.createElement("div");
                   let btn = document.createElement("button");
                   btn.innerText = "Chassis Details";
@@ -359,15 +408,21 @@ export class MapComponent implements OnInit {
           }
         });
 
+
+
+
         function btnClick(reference) {
-          that.router.navigate([`chassis-details`,  reference.graphic.attributes.id ]);
+          const url = that.router.createUrlTree([`chassis-details`, reference.graphic.attributes.id]).toString();
+          window.open(url, '_blank');
+
 				}
 
         function btnClickRoute(reference) {
-          that.router.navigate([`chassis-history`,  reference.graphic.attributes.id ]);
+          const url = that.router.createUrlTree([`chassis-history`, reference.graphic.attributes.id]).toString();
+          window.open(url, '_blank');
 				}
 
-
+/*
         this.mapView = new MapView({
           container: this.mapViewEl.nativeElement,
           center: [-114.8574, 54.6542],
@@ -377,7 +432,10 @@ export class MapComponent implements OnInit {
             minZoom : 3,
           },
         });
-        map.add(layer);
+        */
+        this.mapView.container = this.mapViewEl.nativeElement;
+        this.mapView.map = map;
+        map.add(this.layer);
         this.mapView.popup.viewModel.includeDefaultActions = false;
          this.mapView.on("drag", function(evt) {
           var initialExtent = that.mapView.extent;
@@ -399,21 +457,15 @@ export class MapComponent implements OnInit {
                          }else{
                            that.getAllTable();
                          }
-
-
-
-                          //document.getElementById('vScale').innerHTML = '1:' + evt.toFixed(2);
                         });
-
-                      // this.mapView.whenLayerView(layer).then(lv => {
-                       this.mapView.whenLayerView(layer).then(lv => {
+                       this.mapView.whenLayerView(this.layer).then(lv => {
                            const layerView = lv;
                            const customContentPromise = new CustomContent({
                              outFields: ["*"],
                              creator: (event) => {
-                               const query = layer.createQuery();
+                               const query = this.layer.createQuery();
                                query.aggregateIds = [event.graphic.getObjectId()];
-                                return layer.queryFeatures(query).then(result => {
+                                return this.layer.queryFeatures(query).then(result => {
                                    const contentDiv = document.createElement("div");
                                    const tbl = document.createElement("table");
                                    let headers = ['Chassis ID','Events' ,'PPS Details'];
@@ -428,22 +480,11 @@ export class MapComponent implements OnInit {
                                        cellheader.appendChild(cellTextHeader);
                                        rowheaders.appendChild(cellheader);
                                      }
-
-                                     // add the row to the end of the table body
                                      tblHeader.appendChild(rowheaders);
-
-
                                     const tblBody = document.createElement("tbody");
-
-                                    // creating all cells
                                     for (const feature of result.features) {
-                                      // creates a table row
                                       const row = document.createElement("tr");
-
                                       for (let j = 0; j < headerslabel.length; j++) {
-                                        // Create a <td> element and a text node, make the text
-                                        // node the contents of the <td>, and put the <td> at
-                                        // the end of the table row
                                          let data = "";
                                          const cell = document.createElement("td");
 
@@ -456,56 +497,21 @@ export class MapComponent implements OnInit {
                                         if(headerslabel[j]=='url'){
                                           var createA = document.createElement('a');
                                           var createAText = document.createTextNode(`Chassis Details`);
-                                          createA.setAttribute('href', environment.APP_URL_BASE +  "chassis-details/" + feature.attributes['id']);
+                                          createA.setAttribute('href', this.href +  "/chassis-details/" + feature.attributes['id']);
                                           createA.appendChild(createAText);
                                           cell.appendChild(createA);
                                         }
                                          row.appendChild(cell);
                                       }
-
-                                      // add the row to the end of the table body
                                       tblBody.appendChild(row);
                                     }
-
-                                    // put the <tbody> in the <table>
                                     tbl.appendChild(tblHeader);
-
                                     tbl.appendChild(tblBody);
-                                    // appends <table> into <body>
                                     document.body.appendChild(tbl);
-                                   /*
-                                   const featuresUl = document.createElement("ul");
-                                   let featureLi;
-                                   for (const feature of result.features) {
-                                       featureLi = document.createElement("li");
-                                       featureLi.innerText = `Chasis ${feature.attributes.id}`;
-                                       featuresUl.appendChild(featureLi);
-                                   }
-                                   contentDiv.appendChild(featuresUl);
-                                   */
                                    contentDiv.appendChild(tbl);
 
                                    return contentDiv
                                });
-
-                               /*
-                                 const query = layerView.createQuery();
-                                 query.aggregateIds = [event.graphic.getObjectId()];
-                                 console.log(query);
-                                 return layerView.queryFeatures(query).then(result => {
-                                     console.log(result.features);
-                                     const contentDiv = document.createElement("div");
-                                     const featuresUl = document.createElement("ul");
-                                     let featureLi;
-                                     for (const feature of result.features) {
-                                         featureLi = document.createElement("li");
-                                         featureLi.innerText = `Chasis ${feature.attributes.id}`;
-                                         featuresUl.appendChild(featureLi);
-                                     }
-                                     contentDiv.appendChild(featuresUl);
-                                     return contentDiv
-                                 });
-                                 */
                              }
                          });
                            const clusterConfig = {
@@ -537,7 +543,6 @@ export class MapComponent implements OnInit {
                                            color: "#004a5d",
                                            font: {
                                                weight: "bold",
-                                               family: "Noto Sans",
                                                size: "12px"
                                            }
                                        },
@@ -546,13 +551,13 @@ export class MapComponent implements OnInit {
                                ]
                            };
 
-                           layer.featureReduction = clusterConfig;
+                           this.layer.featureReduction = clusterConfig;
 
                            const toggleButton = document.getElementById("cluster");
 
                            toggleButton.addEventListener("click", () => {
-                               let fr = layer.featureReduction;
-                               layer.featureReduction =
+                               let fr = this.layer.featureReduction;
+                               this.layer.featureReduction =
                                    fr && fr.type === "cluster" ? null : clusterConfig;
                                toggleButton.innerText =
                                    toggleButton.innerText === "Enable Clustering"
@@ -636,9 +641,9 @@ export class MapComponent implements OnInit {
                        });
 
                        function selectFeatures(geometry) {
-                         const query = layer.createQuery();
+                         const query = this.layer.createQuery();
                          query.aggregateIds = [geometry.graphic.getObjectId()];
-                         layer.queryFeatures(query).then(result => {
+                         this.layer.queryFeatures(query).then(result => {
                             const contentDiv = document.createElement("div");
                             return contentDiv
                         });
@@ -671,33 +676,11 @@ export class MapComponent implements OnInit {
                                  });
                                }
                                if(result['graphic'].attributes['clusterId']!=undefined){
-/*
-                                 that.mapView.popup.close();
-                                 that.mapView.popup.open({
-                                   title: "Cluster summary",
-
-                                     // Set the popup's title to the coordinates of the clicked location
-                                      content: "This cluster represents " + result['graphic'].attributes['cluster_count']+" chasis.",
-                                     location: result.mapPoint // Set the location of the popup to the clicked location
-                                 });
-
-                                 */
-
                                }
                              }
                            }
 
                          });
-                         /*
-
-                         const response = await this.mapView.hitTest(event);
-                         if(response.results.length>0){
-                           const result = response.results[0];
-
-                           //console.log(result);
-                         //  console.log(result.type);
-                         }
-                         */
                        });
 
                        function getButton(reference) {
@@ -724,8 +707,7 @@ export class MapComponent implements OnInit {
                        divcontent.appendChild(btnroute);
 
                          return divcontent;
-                        // that.router.navigate([`ppsdetails`,  reference.graphic.attributes.id ]);
-                       }
+                        }
 
 
                        function btnClickMouvePointer(reference) {
@@ -739,7 +721,7 @@ export class MapComponent implements OnInit {
                      setTimeout(() => {
                        if(coords!=null){
                          this.mapView.goTo({
-                          center: [coords[1], coords[0]],zoom:10
+                          center: [coords[1], coords[0]],zoom:9
                         })
                         .catch(function(error) {
                           if (error.name != "AbortError") {
@@ -879,8 +861,8 @@ export class MapComponent implements OnInit {
                }
                */
 
-
-               this.data.push(
+               var createAText = document.createTextNode(`Chassis Details`);
+                this.data.push(
                  {
                    reference: features[i].id,
                     device_id:  features[i].properties.device_id,
@@ -891,7 +873,7 @@ export class MapComponent implements OnInit {
                      lat: features[i].geometry.coordinates[0],
                      lon: features[i].geometry.coordinates[1],
                      georeference: georences_string,
-                     routemap: environment.APP_URL_BASE +   features[i].id,
+                     routemap: this.href +   features[i].id,
                      move_Type_format: this.formatstring(features[i].properties.move_type),
 
 
@@ -909,7 +891,7 @@ export class MapComponent implements OnInit {
                      lat: features[i].geometry.coordinates[0],
                      lon: features[i].geometry.coordinates[1],
                      georeference: georences_string,
-                     routemap: environment.APP_URL_BASE + features[i].id,
+                     routemap: this.href + features[i].id,
                      move_Type_format: this.formatstring(features[i].properties.move_type),
 
                  }
@@ -966,12 +948,9 @@ export class MapComponent implements OnInit {
     let coords = null;
     this.loading = true;
      this.data = this.dataGeneral;
-
-
-
      if($event.chasis!=null){
 
-       this.data = this.data.filter(element => String(element.reference) == String($event.chasis.trim()));
+       this.data = this.data.filter(element => String(element.reference) == String($event.chasis.trim().toUpperCase()));
        if(this.data.length>0){
          coords = [this.data[0].lon,this.data[0].lat]
        }
@@ -1009,6 +988,7 @@ export class MapComponent implements OnInit {
   rebuildmap($event, coords){
 
     fetch(environment.API_URL_BASE + "get-cpr-geojson")
+    //fetch("https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-cpr-geojson")
         .then(res => res.json())
         .then((out) => {
           this.makefromjson(out,$event,coords);
@@ -1090,16 +1070,21 @@ export class MapComponent implements OnInit {
    }
 
    getCenter(event){
+
      let coordinates = event.coordinates.split(',');
-     document.getElementById("esri-view").focus();
+     const longitude = parseFloat(coordinates[0]);
+    const latitude = parseFloat(coordinates[1]);
+
+
      this.mapView.goTo({
-      center: [coordinates[0], coordinates[1]],zoom:10
+        center: [longitude, latitude],zoom:9
     })
     .catch(function(error) {
       if (error.name != "AbortError") {
          console.error(error);
       }
     });
+
    }
 
 
@@ -1223,5 +1208,7 @@ export class MapComponent implements OnInit {
   getChecked($event){
     this.reload = $event;
    }
+
+
 
 }

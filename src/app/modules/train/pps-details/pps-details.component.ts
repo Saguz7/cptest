@@ -73,6 +73,35 @@ export class PpsDetailsComponent implements OnInit {
 
   ngAfterViewInit() {
 
+    /*
+            return loadModules([
+              "esri/layers/GeoJSONLayer",
+              "esri/widgets/Sketch",
+              'esri/Map',
+              "esri/layers/GraphicsLayer",
+              'esri/views/MapView',
+              'esri/Graphic'
+            ])
+              .then(([GeoJSONLayer,Sketch,Map,GraphicsLayer, MapView, Graphic]) => {
+                    //    esriConfig.apiKey = "50b,094799d25e425a0d8cab088adbe49960f20e1669d0f65f4366968aeee9bef";
+                const map: __esri.Map = new Map({
+                  basemap: 'streets'
+                });
+
+
+
+                this.mapView = new MapView({
+                  container: this.mapViewEl.nativeElement,
+                  map: map,
+                  center: [-114.8574, 54.6542],
+                  zoom: 13,
+                });
+
+              })
+              .catch(err => {
+                console.error(err);
+              });
+                */
     this.loading = true;
     this.getDatafromGeoJson();
 
@@ -93,6 +122,7 @@ export class PpsDetailsComponent implements OnInit {
 
 
                 fetch(environment.API_URL_BASE + "get-cpr-geojson")
+              //  fetch("https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-cpr-geojson")
                     .then(res => res.json())
                     .then((out) => {
                       if(out.errorMessage==undefined){
@@ -136,6 +166,7 @@ export class PpsDetailsComponent implements OnInit {
     let chasis = this.activatedRoute.snapshot.paramMap.get("chasis");
 
          this.http.post<any>(environment.API_URL_BASE +'get-chassis', {body:{data:{id: chasis}}}).subscribe(data => {
+      //   this.http.post<any>('https://zt1nm5f67j.execute-api.us-west-2.amazonaws.com/dev/get-chassis', {body:{data:{id: chasis}}}).subscribe(data => {
            let array = JSON.parse(data.body);
            if(array.length>0){
              this.properties = array[0];
@@ -148,15 +179,8 @@ export class PpsDetailsComponent implements OnInit {
     if(json!=undefined){
       this.loading = false;
 
-      console.log(json);
 
       if(json.features!=undefined && (json.features!=undefined && json.features.length>0)){
-        console.log(json.features);
-        console.log(json.features[0]);
-        console.log(json.features[0].geofences);
-
-        console.log(json.features[0].properties.geofences);
-
         this.lon = json.features[0].geometry.coordinates[1];
         this.lat = json.features[0].geometry.coordinates[0];
         let lat = json.features[0].geometry.coordinates[0];
@@ -212,10 +236,6 @@ export class PpsDetailsComponent implements OnInit {
              georences_string = georences_string + this.getGeofencesPrimor(geofences_array[e]) + ',';
           }
         }
-
-        console.log(geofences_array);
-        console.log(georences_string);
-
         this.geofences_array = geofences_array;
 
         return loadModules([
