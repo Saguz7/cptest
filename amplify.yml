@@ -4,9 +4,13 @@ frontend:
     preBuild:
       commands:
         - npm i --force
+        - echo Generate Environment File
+        - npm run generate-env
+        - echo Env file is generated
     build:
       commands:
         - npm run build --prod
+        - echo Finished the build project
   artifacts:
     baseDirectory: dist
     files:

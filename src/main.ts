@@ -1,10 +1,11 @@
+
+
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Auth } from 'aws-amplify';
 import { Amplify } from 'aws-amplify'
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-
 
 let config = {
   Auth: {
@@ -26,9 +27,6 @@ let config = {
   }
 }
 
-
-console.log(config);
-
 Amplify.configure(config);
 
 if (environment.production) {
@@ -37,3 +35,5 @@ if (environment.production) {
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));
+
+

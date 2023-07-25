@@ -12,10 +12,9 @@ import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import jwt_decode from 'jwt-decode';
 import { Amplify } from 'aws-amplify'
-
+import process from 'process';
 import { environment } from '../../../environments/environment';
-
-
+ import { API } from 'aws-amplify';
 @Component({
   selector: 'app-access-denied',
   templateUrl: './access-denied.component.html',
@@ -36,31 +35,56 @@ export class AccessDeniedComponent implements OnInit {
   }
 
   async ngOnInit() {
+    console.log(environment.API_URL_BASE);
+    console.log(environment.REGION_POOL);
+    console.log(environment.USER_POOL_ID);
+    console.log(environment.APP_POOL_ID);
+    console.log(environment.DOMAIN_SIGN);
+    console.log(environment.REDIRECT_SIGNIN);
+    console.log(environment.REDIRECT_SIGNOUT);
+    console.log(environment.IDENTITY_PROVIDER);
 
       if (!environment.API_URL_BASE) {
+        console.log(environment.API_URL_BASE);
+
          console.log("environment.API_URL_BASE void");
        }
        if (!environment.REGION_POOL) {
+         console.log(environment.REGION_POOL);
+
          console.log("environment.REGION_POOL void");
        }
        if (!environment.USER_POOL_ID) {
+         console.log(environment.USER_POOL_ID);
+
          console.log("environment.USER_POOL_ID void");
        }
        if (!environment.APP_POOL_ID) {
+         console.log(environment.APP_POOL_ID);
+
          console.log("environment.APP_POOL_ID void");
        }
        if (!environment.DOMAIN_SIGN) {
+         console.log(environment.DOMAIN_SIGN);
+
          console.log("environment.DOMAIN_SIGN void");
        }
        if (!environment.REDIRECT_SIGNIN) {
+         console.log(environment.REDIRECT_SIGNIN);
+
          console.log("environment.REDIRECT_SIGNIN void");
        }
        if (!environment.REDIRECT_SIGNOUT) {
+         console.log(environment.REDIRECT_SIGNOUT);
+
          console.log("environment.REDIRECT_SIGNOUT void");
        }
        if (!environment.IDENTITY_PROVIDER) {
+         console.log(environment.IDENTITY_PROVIDER);
+
          console.log("environment.IDENTITY_PROVIDER void");
        } else {
+
          try {
            await Auth.federatedSignIn();
            console.log('Sucess');
@@ -69,6 +93,7 @@ export class AccessDeniedComponent implements OnInit {
          } catch (error) {
           console.error('Error', error);
          }
+
        }
 
   }
